@@ -9,7 +9,7 @@ namespace MeetingAttendance
 	{
 		private int _id;
 		private string _name;
-		private List<int> StudentsID;
+		private List<int> _studentsID;
 		public int ID
 		{
 			get => _id;
@@ -20,17 +20,21 @@ namespace MeetingAttendance
 			get => _name;
 			set => _name = value;
 		}
+		public List<int> StudentsID
+		{
+			get => _studentsID;
+		}
 		public Group(int id, string name)
 		{
 			ID = id;
 			Name = name;
-			StudentsID = new List<int>();
+			_studentsID = new List<int>();
 		}
 		public Group(int id, ref StreamReader reader)
 		{
 			ID = id;
 			Name = reader.ReadLine();
-			StudentsID = new List<int>();
+			_studentsID = new List<int>();
 			int studentCount = Int32.Parse(reader.ReadLine());
 			for (int i = 0; i < studentCount; ++i)
 			{
@@ -45,6 +49,14 @@ namespace MeetingAttendance
 			foreach (int entry in StudentsID)
 			{
 				writer.WriteLine(entry);
+			}
+		}
+		public void Delete()
+		{
+			List<int> list = new List<int>(_studentsID);
+			foreach(int entry in list)
+			{
+				StudentList.Students[entry].RemoveFromGroup(ID);
 			}
 		}
 
@@ -69,11 +81,56 @@ namespace MeetingAttendance
 				}
 			}
 		}
+
+		public double CurrentAttendance()
+		{
+			double attended = 0;
+			double total = 0;
+			foreach(int entry in _studentsID)
+			{
+				double attendance = StudentList.Students[entry].CurrentAttendance();
+				if (attendance >= 0)
+				{
+					attended += attendance;
+					total++;
+				}
+			}
+
+			if (total == 0)
+				return -1;
+			return attended / total;
+		}
+		public double TotalAttendance()
+		{
+			double attended = 0;
+			double total = 0;
+			foreach (int entry in _studentsID)
+			{
+				double attendance = StudentList.Students[entry].TotalAttendance();
+				if (attendance >= 0)
+				{
+					attended += attendance;
+					total++;
+				}
+			}
+
+			if (total == 0)
+				return -1;
+			return attended / total;
+		}
 		public string[] MakeTableData()
 		{
 			string[] row = new string[6];
 			row[0] = ID.ToString();
 			row[1] = Name;
+			double attendance = CurrentAttendance();
+			if (attendance == -1)
+				row[2] = "нет занятий";
+			else row[2] = attendance.ToString("P0");
+			attendance = TotalAttendance();
+			if (attendance == -1)
+				row[3] = "нет занятий";
+			else row[3] = TotalAttendance().ToString("P0");
 			/*
 			foreach (int entry in GroupsID)
 			{

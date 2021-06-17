@@ -27,6 +27,7 @@ namespace MeetingAttendance
 					reader.Close();
 				}
 			}
+			++nextID;
 		}
 		public static void SaveToFile()
 		{
@@ -43,6 +44,23 @@ namespace MeetingAttendance
 			}
 
 			writer.Close();
+		}
+		public static int AddTeacher(string name)
+		{
+			int id = nextID;
+			++nextID;
+
+			Teachers[id] = new Teacher(id, name);
+
+			return id;
+		}
+		public static void UpdateTeacher(int index, string name)
+		{
+			Teachers[index].Name = name;
+		}
+		public static void DeleteTeacher(int index)
+		{
+			Teachers.Remove(index);
 		}
 	}
 }

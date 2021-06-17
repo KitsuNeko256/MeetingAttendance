@@ -28,6 +28,7 @@ namespace MeetingAttendance
 					reader.Close();
 				}
 			}
+			++nextID;	
 		}
 		public static void SaveToFile()
 		{
@@ -46,6 +47,17 @@ namespace MeetingAttendance
 			writer.Close();
 		}
 		
+		public static int GetStudentID(string name)
+		{
+			foreach(Student entry in Students.Values)
+			{
+				if(entry.Name == name)
+				{
+					return entry.ID;
+				}
+			}
+			return -1;
+		}
 		public static int AddStudent(int studentID, string name)
 		{
 			int id = nextID;
@@ -59,6 +71,11 @@ namespace MeetingAttendance
 		{
 			Students[index].Name = name;
 			Students[index].StudentID = studentID;
+		}
+		public static void DeleteStudent(int index)
+		{
+			Students[index].Delete();
+			Students.Remove(index);
 		}
 	}
 }

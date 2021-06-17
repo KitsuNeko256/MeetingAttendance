@@ -17,11 +17,33 @@ namespace MeetingAttendance
 			InitializeComponent();
 		}
 
-		private void button1_Click(object sender, EventArgs e)
+		private void StudentsButton_Click(object sender, EventArgs e)
 		{
-			StudentsForm studentForm = new StudentsForm();
+			StudentForm studentForm = new StudentForm();
 			this.Hide();
 			studentForm.ShowDialog();
+			this.Show();
+		}
+
+		private void GroupsButton_Click(object sender, EventArgs e)
+		{
+			GroupForm groupForm = new GroupForm();
+			this.Hide();
+			groupForm.ShowDialog();
+			this.Show();
+
+		}
+
+		private void MainForm_Load(object sender, EventArgs e)
+		{
+
+		}
+
+		private void TeachersButton_Click(object sender, EventArgs e)
+		{
+			TeacherForm teacherForm = new TeacherForm();
+			this.Hide();
+			teacherForm.ShowDialog();
 			this.Show();
 		}
 	}

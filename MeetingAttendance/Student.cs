@@ -49,7 +49,7 @@ namespace MeetingAttendance
 			}
 			Attendance = new List<Tuple<DateTime, bool>>();
 			int attendanceCount = Int32.Parse(reader.ReadLine());
-			for (int i = 0; i < groupCount; ++i)
+			for (int i = 0; i < attendanceCount; ++i)
 			{
 				string date = reader.ReadLine();
 				string presence = reader.ReadLine();
@@ -73,6 +73,14 @@ namespace MeetingAttendance
 				writer.WriteLine(entry.Item2);
 			}
 		}
+		public void Delete()
+		{
+			List<int> list = new List<int>(GroupsID);
+			foreach (int index in list)
+			{
+				GroupList.Groups[index].RemoveStudent(ID);
+			}
+		}
 
 		public void AddToGroup(int GroupID)
 		{
@@ -89,35 +97,32 @@ namespace MeetingAttendance
 		{
 			Attendance.Add(Tuple.Create(date, presence));
 		}
-		public double LastMonthAttendance()
+		public double CurrentAttendance()
 		{
 			DateTime Now = DateTime.Now;
 			double attended = 0;
 			double total = 0;
 
-			int i = Attendance.Count - 1;
-			while (i >= 0 && Attendance[i].Item1.Month == Now.Month)
-				--i;
-			for (; i>=0; --i)
+			for (int i = Attendance.Count - 1; i >= 0; --i)
 			{
-				if ((Now.Month == 1 && Attendance[i].Item1.Month == 12) ||
-					Now.Month - 1 == Attendance[i].Item1.Month)
-				{
-					++total;
-					if (Attendance[i].Item2)
-						++attended;
-				}
-				else break;
-
+				TimeSpan diff = Now.Subtract(Attendance[i].Item1);
+				if (diff.TotalDays > 30)
+					break;
+				++total;
+				if (Attendance[i].Item2)
+					++attended;
 			}
 
 			if (total == 0)
-				return 1;
+				return -1;
 			return attended / total;
 		}
 		public double TotalAttendance()
 		{
 			double attended = 0;
+			double total = Attendance.Count;
+			if (total == 0)
+				return -1;
 
 			foreach (Tuple<DateTime, bool> entry in Attendance)
 			{
@@ -125,7 +130,7 @@ namespace MeetingAttendance
 					attended++;
 			}
 
-			return attended/Attendance.Count;
+			return attended/total;
 		}
 
 		public string[] MakeTableData()
@@ -134,13 +139,22 @@ namespace MeetingAttendance
 			row[0] = ID.ToString();
 			row[1] = StudentID.ToString();
 			row[2] = Name;
-			foreach(int entry in GroupsID)
+			if(GroupsID.Count > 0)
 			{
-				row[3] += GroupList.Groups[entry].Name + "\n";
+				foreach (int entry in GroupsID)
+				{
+					row[3] += GroupList.Groups[entry].Name + " ";
+				}
+				row[3].Trim();
 			}
-			row[3].Trim();
-			row[4] = LastMonthAttendance().ToString("P0");
-			row[5] = TotalAttendance().ToString("P0");
+			double attendance = CurrentAttendance();
+			if (attendance == -1)
+				row[4] = "нет занятий";
+			else row[4] = attendance.ToString("P0");
+			attendance = TotalAttendance();
+			if (attendance == -1)
+				row[5] = "нет занятий";
+			else row[5] = TotalAttendance().ToString("P0");
 
 			return row;
 		}

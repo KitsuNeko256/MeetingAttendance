@@ -28,6 +28,7 @@ namespace MeetingAttendance
 					reader.Close();
 				}
 			}
+			++nextID;
 		}
 		public static void SaveToFile()
 		{
@@ -44,6 +45,24 @@ namespace MeetingAttendance
 			}
 
 			writer.Close();
+		}
+		public static int AddGroup(string name)
+		{
+			int id = nextID;
+			++nextID;
+
+			Groups[id] = new Group(id, name);
+
+			return id;
+		}
+		public static void UpdateGroup(int index, string name)
+		{
+			Groups[index].Name = name;
+		}
+		public static void DeleteGroup(int index)
+		{
+			Groups[index].Delete();
+			Groups.Remove(index);
 		}
 	}
 }
