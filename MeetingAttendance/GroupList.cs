@@ -46,6 +46,7 @@ namespace MeetingAttendance
 
 			writer.Close();
 		}
+
 		public static int AddGroup(string name)
 		{
 			int id = nextID;

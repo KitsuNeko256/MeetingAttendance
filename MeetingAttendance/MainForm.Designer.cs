@@ -38,7 +38,7 @@ namespace MeetingAttendance
 			// 
 			this.StudentsButton.Location = new System.Drawing.Point(12, 12);
 			this.StudentsButton.Name = "StudentsButton";
-			this.StudentsButton.Size = new System.Drawing.Size(99, 48);
+			this.StudentsButton.Size = new System.Drawing.Size(96, 55);
 			this.StudentsButton.TabIndex = 0;
 			this.StudentsButton.Text = "Студенты";
 			this.StudentsButton.UseVisualStyleBackColor = true;
@@ -46,9 +46,9 @@ namespace MeetingAttendance
 			// 
 			// GroupsButton
 			// 
-			this.GroupsButton.Location = new System.Drawing.Point(12, 66);
+			this.GroupsButton.Location = new System.Drawing.Point(12, 73);
 			this.GroupsButton.Name = "GroupsButton";
-			this.GroupsButton.Size = new System.Drawing.Size(99, 48);
+			this.GroupsButton.Size = new System.Drawing.Size(96, 55);
 			this.GroupsButton.TabIndex = 1;
 			this.GroupsButton.Text = "Группы";
 			this.GroupsButton.UseVisualStyleBackColor = true;
@@ -56,9 +56,9 @@ namespace MeetingAttendance
 			// 
 			// TeachersButton
 			// 
-			this.TeachersButton.Location = new System.Drawing.Point(12, 120);
+			this.TeachersButton.Location = new System.Drawing.Point(12, 134);
 			this.TeachersButton.Name = "TeachersButton";
-			this.TeachersButton.Size = new System.Drawing.Size(99, 48);
+			this.TeachersButton.Size = new System.Drawing.Size(96, 55);
 			this.TeachersButton.TabIndex = 2;
 			this.TeachersButton.Text = "Учителя";
 			this.TeachersButton.UseVisualStyleBackColor = true;
@@ -68,13 +68,12 @@ namespace MeetingAttendance
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(584, 361);
+			this.ClientSize = new System.Drawing.Size(266, 361);
 			this.Controls.Add(this.TeachersButton);
 			this.Controls.Add(this.GroupsButton);
 			this.Controls.Add(this.StudentsButton);
 			this.Name = "MainForm";
 			this.Text = "Главное Меню";
-			this.Load += new System.EventHandler(this.MainForm_Load);
 			this.ResumeLayout(false);
 
 		}

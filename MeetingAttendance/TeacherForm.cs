@@ -50,46 +50,68 @@ namespace MeetingAttendance
             }
         }
 
-        private void SaveTeacherData()
+        private string OldValue;
+        private void TeachersGrid_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
-            foreach (DataGridViewRow row in TeachersGrid.Rows)
+            int row = e.RowIndex;
+            int col = e.ColumnIndex;
+            if (TeachersGrid.Rows[row].Cells[col].Value == null)
+                OldValue = "";
+            else OldValue = TeachersGrid.Rows[row].Cells[col].Value.ToString();
+        }
+        private void TeachersGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            int row = e.RowIndex;
+            int col = e.ColumnIndex;
+            object value = TeachersGrid.Rows[row].Cells[col].Value;
+            //New Teacher
+            if (TeachersGrid.Rows[row].Cells[2].Value == null)
             {
-                if (row.Cells["Name"].Value == null)
+                /*
+                if (TeachersGrid.Rows[row].Cells[0].Value == null ||
+                    TeachersGrid.Rows[row].Cells[1].Value == null)
+                    return;
+                int ID;
+                if (!Int32.TryParse(TeachersGrid.Rows[row].Cells[0].Value.ToString(), out ID))
                 {
-                    continue;
+                    WrongIdError();
+                    return;
                 }
-
-                string Name = row.Cells["Name"].Value.ToString();
-                if (row.Cells["ID"].Value == null)
-                {
-                    row.Cells["ID"].Value = TeacherList.AddTeacher(Name);
-                }
-                else
-                {
-                    int index = Int32.Parse(row.Cells["ID"].Value.ToString());
-                    TeacherList.UpdateTeacher(index, Name);
-                }
+                */
+                if (TeachersGrid.Rows[row].Cells[1].Value == null)
+                    return;
+                string Name = TeachersGrid.Rows[row].Cells[1].Value.ToString();
+                TeacherList.AddTeacher(Name);
+                TeachersGrid.Rows[row].Cells[2].Value = "нет занятий";
+                TeachersGrid.Rows[row].Cells[3].Value = "нет занятий";
             }
-
+            /*
+            //ID
+            else if (e.ColumnIndex == 0)
+            {
+                if (value == null)
+                {
+                    WrongIdError();
+                    TeachersGrid.Rows[row].Cells[col].Value = OldValue;
+                    return;
+                }
+                StudentList.UpdateStudentID(Int32.Parse(OldValue.ToString()), Int32.Parse(value.ToString()));
+            }
+            */
+            //NAME
+            else
+            {
+                if (value == null)
+                {
+                    WrongNameError();
+                    TeachersGrid.Rows[row].Cells[col].Value = OldValue;
+                    return;
+                }
+                int ID = Int32.Parse(TeachersGrid.Rows[row].Cells[0].Value.ToString());
+                TeacherList.UpdateTeacher(ID, value.ToString());
+            }
         }
-        public TeacherForm()
-        {
-            InitializeComponent();
-            SetupDataGridView();
-            LoadTeacherData();
-        }
-
-        private void SaveButton_Click(object sender, EventArgs e)
-        {
-            SaveTeacherData();
-        }
-
-        private void ExitButton_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-		private void TeachersGrid_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        private void TeachersGrid_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
         {
             bool cancel = MessageBox.Show("Вы уверены что хотите удалить группу?", "Удаление группы", MessageBoxButtons.OKCancel) == DialogResult.Cancel;
             e.Cancel = cancel;
@@ -102,5 +124,18 @@ namespace MeetingAttendance
                 }
             }
         }
+
+        private void WrongNameError()
+        {
+            MessageBox.Show("Недопустимый код групы!", "Недопустимый код", MessageBoxButtons.OK);
+        }
+
+        public TeacherForm()
+        {
+            InitializeComponent();
+            SetupDataGridView();
+            LoadTeacherData();
+        }
+
 	}
 }

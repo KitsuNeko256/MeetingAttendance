@@ -50,31 +50,94 @@ namespace MeetingAttendance
                 GroupsGrid.Rows.Add(entry.MakeTableData());
             }
         }
-        private void SaveGroupData()
+
+        private string OldValue;
+        private void GroupsGrid_CellBeginEdit(object sender, DataGridViewCellCancelEventArgs e)
         {
-            foreach (DataGridViewRow row in GroupsGrid.Rows)
+            int row = e.RowIndex;
+            int col = e.ColumnIndex;
+            if (GroupsGrid.Rows[row].Cells[col].Value == null)
+                OldValue = "";
+            else OldValue = GroupsGrid.Rows[row].Cells[col].Value.ToString();
+        }
+        private void GroupsGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            int row = e.RowIndex;
+            int col = e.ColumnIndex;
+            object value = GroupsGrid.Rows[row].Cells[col].Value;
+            //New Group
+            if (GroupsGrid.Rows[row].Cells[2].Value == null)
             {
-                if (row.Cells["Name"].Value == null)
+                /*
+                if (GroupsGrid.Rows[row].Cells[0].Value == null ||
+                    GroupsGrid.Rows[row].Cells[1].Value == null)
+                    return;
+                int ID;
+                if (!Int32.TryParse(GroupsGrid.Rows[row].Cells[0].Value.ToString(), out ID))
                 {
-                    continue;
+                    WrongIdError();
+                    return;
                 }
-
-                string Name = row.Cells["Name"].Value.ToString();
-                if (row.Cells["ID"].Value == null)
-                {
-                    row.Cells["ID"].Value = GroupList.AddGroup(Name);
-                }
-                else
-                {
-                    int index = Int32.Parse(row.Cells["ID"].Value.ToString());
-                    GroupList.UpdateGroup(index, Name);
-                }
+                */
+                if (GroupsGrid.Rows[row].Cells[1].Value == null)
+                    return;
+                string Name = GroupsGrid.Rows[row].Cells[1].Value.ToString();
+                GroupList.AddGroup(Name);
+                GroupsGrid.Rows[row].Cells[2].Value = "нет занятий";
+                GroupsGrid.Rows[row].Cells[3].Value = "нет занятий";
             }
+            /*
+            //ID
+            else if (e.ColumnIndex == 0)
+            {
+                if (value == null)
+                {
+                    WrongIdError();
+                    GroupsGrid.Rows[row].Cells[col].Value = OldValue;
+                    return;
+                }
+                StudentList.UpdateStudentID(Int32.Parse(OldValue.ToString()), Int32.Parse(value.ToString()));
+            }
+            */
+            //NAME
+            else
+            {
+                if (value == null)
+                {
+                    WrongNameError();
+                    GroupsGrid.Rows[row].Cells[col].Value = OldValue;
+                    return;
+                }
+                int ID = Int32.Parse(GroupsGrid.Rows[row].Cells[0].Value.ToString());
+                GroupList.UpdateGroup(ID, value.ToString());
+            }
+        }
+        private void GroupsGrid_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            bool cancel = MessageBox.Show("Вы уверены что хотите удалить группу?", "Удаление группы", MessageBoxButtons.OKCancel) == DialogResult.Cancel;
+            e.Cancel = cancel;
+            if (!cancel)
+            {
+                if (e.Row.Cells["ID"].Value != null)
+                {
+                    int index = Int32.Parse(e.Row.Cells["ID"].Value.ToString());
+                    GroupList.DeleteGroup(index);
+                }
+                CurrentGroupIndex--;
+                UpdateCurrentGroup();
+            }
+        }
 
+        private void WrongIdError()
+        {
+            MessageBox.Show("Неверный номер группы!", "Неверный номер", MessageBoxButtons.OK);
+        }
+        private void WrongNameError()
+        {
+            MessageBox.Show("Недопустимый код групы!", "Недопустимый код", MessageBoxButtons.OK);
         }
 
         private int CurrentGroupIndex = 0;
-
         private void GroupsGrid_CellClick(object sender, DataGridViewCellEventArgs e)
         {
 			if (GroupsGrid.CurrentRow.Cells["ID"].Value == null)
@@ -95,6 +158,7 @@ namespace MeetingAttendance
             }
         }
 
+
         private void FillStudentsComboBox()
         {
             AutoCompleteStringCollection collection = new AutoCompleteStringCollection();
@@ -110,7 +174,7 @@ namespace MeetingAttendance
         private void AddStudentButton_Click(object sender, EventArgs e)
         {
             string Name = StudentsComboBox.Text;
-            int ID = StudentList.GetStudentID(Name);
+            int ID = StudentList.FindStudent(Name);
             if (ID == -1)
 			{
                 MessageBox.Show("Студент с таким именем не найден!", "Ошибка",
@@ -129,7 +193,7 @@ namespace MeetingAttendance
         private void RemoveStudentButton_Click(object sender, EventArgs e)
         {
             string Name = CurrentGroupList.SelectedItem.ToString();
-            int ID = StudentList.GetStudentID(Name);
+            int ID = StudentList.FindStudent(Name);
             if (ID == -1)
             {
                 //student doesn't exist error
@@ -148,30 +212,5 @@ namespace MeetingAttendance
             FillStudentsComboBox();
         }
 
-        private void SaveButton_Click(object sender, EventArgs e)
-        {
-            SaveGroupData();
-        }
-
-		private void ExitButton_Click(object sender, EventArgs e)
-		{
-            Close();
-        }
-
-		private void GroupsGrid_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
-		{
-            bool cancel = MessageBox.Show("Вы уверены что хотите удалить группу?", "Удаление группы", MessageBoxButtons.OKCancel) == DialogResult.Cancel;
-            e.Cancel = cancel;
-            if (!cancel)
-            {
-                if (e.Row.Cells["ID"].Value != null)
-                {
-                    int index = Int32.Parse(e.Row.Cells["ID"].Value.ToString());
-                    GroupList.DeleteGroup(index);
-                }
-                    CurrentGroupIndex--;
-                UpdateCurrentGroup();
-            }
-        }
 	}
 }

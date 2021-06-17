@@ -59,6 +59,19 @@ namespace MeetingAttendance
 				StudentList.Students[entry].RemoveFromGroup(ID);
 			}
 		}
+		public void ChangeID(int newID)
+		{
+			List<int> list = new List<int>(_studentsID);
+			foreach (int entry in list)
+			{
+				StudentList.Students[entry].RemoveFromGroup(ID);
+			}
+			ID = newID;
+			foreach (int entry in list)
+			{
+				StudentList.Students[entry].AddToGroup(ID);
+			}
+		}
 
 		public void AddStudent(int StudentID)
 		{
@@ -88,7 +101,7 @@ namespace MeetingAttendance
 			double total = 0;
 			foreach(int entry in _studentsID)
 			{
-				double attendance = StudentList.Students[entry].CurrentAttendance();
+				double attendance = StudentList.Students[entry].CurrentAttendance(DateTime.Now);
 				if (attendance >= 0)
 				{
 					attended += attendance;
@@ -131,15 +144,6 @@ namespace MeetingAttendance
 			if (attendance == -1)
 				row[3] = "нет занятий";
 			else row[3] = TotalAttendance().ToString("P0");
-			/*
-			foreach (int entry in GroupsID)
-			{
-				row[3] += GroupList.Groups[entry].Name + "\n";
-			}
-			row[3].Trim();
-			row[4] = "0%";
-			row[5] = "0%";
-			*/
 
 			return row;
 		}

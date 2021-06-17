@@ -23,6 +23,8 @@ namespace MeetingAttendance
 			this.Hide();
 			studentForm.ShowDialog();
 			this.Show();
+			StudentList.SaveToFile();
+			GroupList.SaveToFile();
 		}
 
 		private void GroupsButton_Click(object sender, EventArgs e)
@@ -31,13 +33,10 @@ namespace MeetingAttendance
 			this.Hide();
 			groupForm.ShowDialog();
 			this.Show();
-
+			StudentList.SaveToFile();
+			GroupList.SaveToFile();
 		}
 
-		private void MainForm_Load(object sender, EventArgs e)
-		{
-
-		}
 
 		private void TeachersButton_Click(object sender, EventArgs e)
 		{
