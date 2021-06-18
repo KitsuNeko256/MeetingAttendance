@@ -5,7 +5,7 @@ using System.IO;
 
 namespace MeetingAttendance
 {
-	class GroupList
+	public class GroupList
 	{
 		private static int nextID = 0;
 		public static Dictionary<int, Group> Groups;
@@ -64,6 +64,12 @@ namespace MeetingAttendance
 		{
 			Groups[index].Delete();
 			Groups.Remove(index);
+		}
+
+		public static void Reset()
+		{
+			nextID = 0;
+			Groups = null;
 		}
 	}
 }

@@ -47,7 +47,7 @@ namespace MeetingAttendance
         {
             foreach (Group entry in GroupList.Groups.Values)
             {
-                GroupsGrid.Rows.Add(entry.MakeTableData());
+                GroupsGrid.Rows.Add(entry.MakeTableData(DateTime.Now));
             }
         }
 

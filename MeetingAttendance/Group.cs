@@ -5,7 +5,7 @@ using System.IO;
 
 namespace MeetingAttendance
 {
-	class Group
+	public class Group
 	{
 		private int _id;
 		private string _name;
@@ -56,7 +56,7 @@ namespace MeetingAttendance
 			List<int> list = new List<int>(_studentsID);
 			foreach(int entry in list)
 			{
-				StudentList.Students[entry].RemoveFromGroup(ID);
+				StudentList.Students[entry].RemoveGroup(ID);
 			}
 		}
 		public void ChangeID(int newID)
@@ -64,12 +64,12 @@ namespace MeetingAttendance
 			List<int> list = new List<int>(_studentsID);
 			foreach (int entry in list)
 			{
-				StudentList.Students[entry].RemoveFromGroup(ID);
+				StudentList.Students[entry].RemoveGroup(ID);
 			}
 			ID = newID;
 			foreach (int entry in list)
 			{
-				StudentList.Students[entry].AddToGroup(ID);
+				StudentList.Students[entry].AddGroup(ID);
 			}
 		}
 
@@ -80,7 +80,7 @@ namespace MeetingAttendance
 				if (StudentsID.Contains(StudentID))
 					return;
 				StudentsID.Add(StudentID);
-				StudentList.Students[StudentID].AddToGroup(ID);
+				StudentList.Students[StudentID].AddGroup(ID);
 			}
 		}
 		public void RemoveStudent(int StudentID)
@@ -90,18 +90,18 @@ namespace MeetingAttendance
 				if (StudentsID.Contains(StudentID))
 				{
 					StudentsID.Remove(StudentID);
-					StudentList.Students[StudentID].RemoveFromGroup(ID);
+					StudentList.Students[StudentID].RemoveGroup(ID);
 				}
 			}
 		}
 
-		public double CurrentAttendance()
+		public double CurrentAttendance(DateTime Now)
 		{
 			double attended = 0;
 			double total = 0;
 			foreach(int entry in _studentsID)
 			{
-				double attendance = StudentList.Students[entry].CurrentAttendance(DateTime.Now);
+				double attendance = StudentList.Students[entry].CurrentAttendance(Now);
 				if (attendance >= 0)
 				{
 					attended += attendance;
@@ -131,12 +131,12 @@ namespace MeetingAttendance
 				return -1;
 			return attended / total;
 		}
-		public string[] MakeTableData()
+		public string[] MakeTableData(DateTime Now)
 		{
 			string[] row = new string[6];
 			row[0] = ID.ToString();
 			row[1] = Name;
-			double attendance = CurrentAttendance();
+			double attendance = CurrentAttendance(Now);
 			if (attendance == -1)
 				row[2] = "нет занятий";
 			else row[2] = attendance.ToString("P0");

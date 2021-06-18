@@ -5,7 +5,7 @@ using System.IO;
 
 namespace MeetingAttendance
 {
-	class Teacher
+	public class Teacher
 	{
 		private int _id;
 		private string _name;

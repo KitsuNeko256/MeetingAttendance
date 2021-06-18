@@ -5,7 +5,7 @@ using System.IO;
 
 namespace MeetingAttendance
 {
-	class StudentList
+	public class StudentList
 	{
 		public static Dictionary<int, Student> Students;
 
@@ -84,6 +84,11 @@ namespace MeetingAttendance
 		{
 			Students[index].Delete();
 			Students.Remove(index);
+		}
+
+		public static void Reset()
+		{
+			Students = null;
 		}
 	}
 }

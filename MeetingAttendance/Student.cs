@@ -9,7 +9,7 @@ namespace MeetingAttendance
 	{
 		private int _id;
 		private string _name;
-		private List<int> GroupsID;
+		public List<int> GroupsID;
 		private List<Tuple<DateTime, bool>> Attendance;
 
 		public int ID
@@ -86,13 +86,13 @@ namespace MeetingAttendance
 			}
 		}
 
-		public void AddToGroup(int GroupID)
+		public void AddGroup(int GroupID)
 		{
 			if (GroupsID.Contains(GroupID))
 				return;
 			GroupsID.Add(GroupID);
 		}
-		public void RemoveFromGroup(int GroupID)
+		public void RemoveGroup(int GroupID)
 		{
 			GroupsID.Remove(GroupID);
 		}
@@ -149,7 +149,7 @@ namespace MeetingAttendance
 				{
 					row[2] += GroupList.Groups[entry].Name + " ";
 				}
-				row[2].Trim();
+				row[2] = row[2].Trim();
 			}
 			double attendance = CurrentAttendance(Now);
 			if (attendance == -1)
