@@ -4,7 +4,7 @@ using System.Text;
 
 namespace MeetingAttendance
 {
-	class Lesson
+	public class Lesson
 	{
 		private int ID;
 		private string subject;

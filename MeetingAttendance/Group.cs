@@ -5,11 +5,11 @@ using System.IO;
 
 namespace MeetingAttendance
 {
-	class Group
+	public class Group
 	{
 		private int _id;
 		private string _name;
-		private List<int> StudentsID;
+		private List<int> _studentsID;
 		public int ID
 		{
 			get => _id;
@@ -20,17 +20,21 @@ namespace MeetingAttendance
 			get => _name;
 			set => _name = value;
 		}
+		public List<int> StudentsID
+		{
+			get => _studentsID;
+		}
 		public Group(int id, string name)
 		{
 			ID = id;
 			Name = name;
-			StudentsID = new List<int>();
+			_studentsID = new List<int>();
 		}
 		public Group(int id, ref StreamReader reader)
 		{
 			ID = id;
 			Name = reader.ReadLine();
-			StudentsID = new List<int>();
+			_studentsID = new List<int>();
 			int studentCount = Int32.Parse(reader.ReadLine());
 			for (int i = 0; i < studentCount; ++i)
 			{
@@ -47,6 +51,27 @@ namespace MeetingAttendance
 				writer.WriteLine(entry);
 			}
 		}
+		public void Delete()
+		{
+			List<int> list = new List<int>(_studentsID);
+			foreach(int entry in list)
+			{
+				StudentList.Students[entry].RemoveGroup(ID);
+			}
+		}
+		public void ChangeID(int newID)
+		{
+			List<int> list = new List<int>(_studentsID);
+			foreach (int entry in list)
+			{
+				StudentList.Students[entry].RemoveGroup(ID);
+			}
+			ID = newID;
+			foreach (int entry in list)
+			{
+				StudentList.Students[entry].AddGroup(ID);
+			}
+		}
 
 		public void AddStudent(int StudentID)
 		{
@@ -55,7 +80,7 @@ namespace MeetingAttendance
 				if (StudentsID.Contains(StudentID))
 					return;
 				StudentsID.Add(StudentID);
-				StudentList.Students[StudentID].AddToGroup(ID);
+				StudentList.Students[StudentID].AddGroup(ID);
 			}
 		}
 		public void RemoveStudent(int StudentID)
@@ -65,24 +90,60 @@ namespace MeetingAttendance
 				if (StudentsID.Contains(StudentID))
 				{
 					StudentsID.Remove(StudentID);
-					StudentList.Students[StudentID].RemoveFromGroup(ID);
+					StudentList.Students[StudentID].RemoveGroup(ID);
 				}
 			}
 		}
-		public string[] MakeTableData()
+
+		public double CurrentAttendance(DateTime Now)
+		{
+			double attended = 0;
+			double total = 0;
+			foreach(int entry in _studentsID)
+			{
+				double attendance = StudentList.Students[entry].CurrentAttendance(Now);
+				if (attendance >= 0)
+				{
+					attended += attendance;
+					total++;
+				}
+			}
+
+			if (total == 0)
+				return -1;
+			return attended / total;
+		}
+		public double TotalAttendance()
+		{
+			double attended = 0;
+			double total = 0;
+			foreach (int entry in _studentsID)
+			{
+				double attendance = StudentList.Students[entry].TotalAttendance();
+				if (attendance >= 0)
+				{
+					attended += attendance;
+					total++;
+				}
+			}
+
+			if (total == 0)
+				return -1;
+			return attended / total;
+		}
+		public string[] MakeTableData(DateTime Now)
 		{
 			string[] row = new string[6];
 			row[0] = ID.ToString();
 			row[1] = Name;
-			/*
-			foreach (int entry in GroupsID)
-			{
-				row[3] += GroupList.Groups[entry].Name + "\n";
-			}
-			row[3].Trim();
-			row[4] = "0%";
-			row[5] = "0%";
-			*/
+			double attendance = CurrentAttendance(Now);
+			if (attendance == -1)
+				row[2] = "нет занятий";
+			else row[2] = attendance.ToString("P0");
+			attendance = TotalAttendance();
+			if (attendance == -1)
+				row[3] = "нет занятий";
+			else row[3] = TotalAttendance().ToString("P0");
 
 			return row;
 		}

@@ -5,7 +5,7 @@ using System.IO;
 
 namespace MeetingAttendance
 {
-	class GroupList
+	public class GroupList
 	{
 		private static int nextID = 0;
 		public static Dictionary<int, Group> Groups;
@@ -28,6 +28,7 @@ namespace MeetingAttendance
 					reader.Close();
 				}
 			}
+			++nextID;
 		}
 		public static void SaveToFile()
 		{
@@ -44,6 +45,31 @@ namespace MeetingAttendance
 			}
 
 			writer.Close();
+		}
+
+		public static int AddGroup(string name)
+		{
+			int id = nextID;
+			++nextID;
+
+			Groups[id] = new Group(id, name);
+
+			return id;
+		}
+		public static void UpdateGroup(int index, string name)
+		{
+			Groups[index].Name = name;
+		}
+		public static void DeleteGroup(int index)
+		{
+			Groups[index].Delete();
+			Groups.Remove(index);
+		}
+
+		public static void Reset()
+		{
+			nextID = 0;
+			Groups = null;
 		}
 	}
 }
