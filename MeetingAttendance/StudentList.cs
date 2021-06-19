@@ -66,14 +66,13 @@ namespace MeetingAttendance
 		}
 		public static bool UpdateStudentID(int oldID, int newID)
 		{
+			if(oldID == newID)
+				return true;
 			if (!Students.ContainsKey(oldID) || Students.ContainsKey(newID)) 
 				return false;
-			if (oldID != newID)
-			{
-				Students[newID] = Students[oldID];
-				Students[newID].ChangeID(newID);
-				Students.Remove(oldID);
-			}
+			Students[newID] = Students[oldID];
+			Students[newID].ID = newID;
+			Students.Remove(oldID);
 			return true;
 		}
 		public static void UpdateStudentName(int id, string name)
@@ -82,7 +81,7 @@ namespace MeetingAttendance
 		}
 		public static void DeleteStudent(int index)
 		{
-			Students[index].Delete();
+			Students[index].ClearGroups();
 			Students.Remove(index);
 		}
 
