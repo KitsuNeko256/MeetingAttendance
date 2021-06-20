@@ -54,22 +54,22 @@ namespace UnitTests
 		{
 			Student student = GenerateStudent();
 
-			StudentList.Students = new Dictionary<int, Student>();
+			StudentList.Reset();
 			StudentList.Students.Add(student.ID, student);
 
-			GroupList.Groups = new Dictionary<int, Group>();
+			GroupList.Reset();
 			GroupList.AddGroup("group");
-			GroupList.Groups[0].AddStudent(student.ID);
+			GroupList.Groups["group"].AddStudent(student.ID);
 
 			Assert.AreEqual(0, student.GroupsID[0]);
-			Assert.AreEqual(1, GroupList.Groups[0].StudentsID[0]);
+			Assert.AreEqual(1, GroupList.Groups["group"].StudentsID[0]);
 
 			StudentList.UpdateStudentID(1, 2);
 
 			Assert.AreEqual(0, student.GroupsID[0]);
-			Assert.AreEqual(2, GroupList.Groups[0].StudentsID[0]);
+			Assert.AreEqual(2, GroupList.Groups["group"].StudentsID[0]);
 
-			student.Delete();
+			student.ClearGroups();
 
 			Assert.AreEqual(0, student.GroupsID.Count);
 
@@ -81,12 +81,12 @@ namespace UnitTests
 		{
 			Student student = GenerateStudent();
 
-			StudentList.Students = new Dictionary<int, Student>();
+			StudentList.Reset();
 			StudentList.Students.Add(student.ID, student);
 
-			GroupList.Groups = new Dictionary<int, Group>();
+			GroupList.Reset();
 			GroupList.AddGroup("group");
-			GroupList.Groups[0].AddStudent(student.ID);
+			GroupList.Groups["group"].AddStudent(student.ID);
 
 			DateTime date = new DateTime(2021, 1, 29, 23, 59, 59);
 			string[] actual = student.MakeTableData(date);

@@ -7,11 +7,15 @@ namespace MeetingAttendance
 {
 	public class StudentList
 	{
-		public static Dictionary<int, Student> Students;
+		private static readonly Dictionary<int, Student> _students = new Dictionary<int, Student>();
+
+		public static Dictionary<int, Student> Students
+		{
+			get => _students;
+		}
 
 		public static void LoadFromFile()
 		{
-			Students = new Dictionary<int, Student>();
 			if (Directory.Exists("data"))
 			{
 				if (File.Exists("data\\students.txt"))
@@ -87,7 +91,7 @@ namespace MeetingAttendance
 
 		public static void Reset()
 		{
-			Students = null;
+			_students.Clear();
 		}
 	}
 }

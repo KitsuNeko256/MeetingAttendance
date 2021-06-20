@@ -29,9 +29,9 @@ namespace MeetingAttendance
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
-			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle5 = new System.Windows.Forms.DataGridViewCellStyle();
-			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle6 = new System.Windows.Forms.DataGridViewCellStyle();
+			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StudentForm));
 			this.StudentsGrid = new System.Windows.Forms.DataGridView();
 			this.StudentID = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -58,6 +58,7 @@ namespace MeetingAttendance
 			this.StudentsGrid.Name = "StudentsGrid";
 			this.StudentsGrid.RowHeadersVisible = false;
 			this.StudentsGrid.RowTemplate.Height = 25;
+			this.StudentsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
 			this.StudentsGrid.Size = new System.Drawing.Size(760, 400);
 			this.StudentsGrid.TabIndex = 0;
 			this.StudentsGrid.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.StudentsGrid_CellBeginEdit);
@@ -77,8 +78,8 @@ namespace MeetingAttendance
 			// 
 			// Groups
 			// 
-			dataGridViewCellStyle4.BackColor = System.Drawing.Color.Silver;
-			this.Groups.DefaultCellStyle = dataGridViewCellStyle4;
+			dataGridViewCellStyle1.BackColor = System.Drawing.Color.Silver;
+			this.Groups.DefaultCellStyle = dataGridViewCellStyle1;
 			this.Groups.FillWeight = 50F;
 			this.Groups.HeaderText = "Группы";
 			this.Groups.Name = "Groups";
@@ -86,8 +87,8 @@ namespace MeetingAttendance
 			// 
 			// CurrentAttendance
 			// 
-			dataGridViewCellStyle5.BackColor = System.Drawing.Color.Silver;
-			this.CurrentAttendance.DefaultCellStyle = dataGridViewCellStyle5;
+			dataGridViewCellStyle2.BackColor = System.Drawing.Color.Silver;
+			this.CurrentAttendance.DefaultCellStyle = dataGridViewCellStyle2;
 			this.CurrentAttendance.FillWeight = 75F;
 			this.CurrentAttendance.HeaderText = "Посещаемость за последние 30 дней";
 			this.CurrentAttendance.Name = "CurrentAttendance";
@@ -95,8 +96,8 @@ namespace MeetingAttendance
 			// 
 			// TotalAttendance
 			// 
-			dataGridViewCellStyle6.BackColor = System.Drawing.Color.Silver;
-			this.TotalAttendance.DefaultCellStyle = dataGridViewCellStyle6;
+			dataGridViewCellStyle3.BackColor = System.Drawing.Color.Silver;
+			this.TotalAttendance.DefaultCellStyle = dataGridViewCellStyle3;
 			this.TotalAttendance.FillWeight = 75F;
 			this.TotalAttendance.HeaderText = "Посещаемость за всё время";
 			this.TotalAttendance.Name = "TotalAttendance";

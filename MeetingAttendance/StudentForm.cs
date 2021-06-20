@@ -14,7 +14,9 @@ namespace MeetingAttendance
         private void LoadStudentData()
         {
             foreach(Student entry in StudentList.Students.Values)
+            {
                 StudentsGrid.Rows.Add(entry.MakeTableData(DateTime.Now));
+            }
         }
 
         private string OldValue;
@@ -36,6 +38,11 @@ namespace MeetingAttendance
 			{
                 if (Cells["StudentID"].Value == null)
 				{
+                    if (Cells["StudentName"].Value == null)
+                    {
+                        StudentsGrid.Rows.RemoveAt(e.RowIndex);
+                        return;
+                    }
                     Cells["StudentID"].Style.BackColor = Color.FromArgb(255, 255, 225, 225);
                 }
                 else if (Cells["StudentName"].Value == null)
@@ -44,8 +51,7 @@ namespace MeetingAttendance
                 }
                 else
 				{
-                    int ID;
-                    if (!Int32.TryParse(Cells["StudentID"].Value.ToString(), out ID))
+                    if (!Int32.TryParse(Cells["StudentID"].Value.ToString(), out int ID))
                     {
                         WrongIdError();
                         Cells[col].Value = OldValue;
@@ -56,8 +62,7 @@ namespace MeetingAttendance
                     {
                         Cells["StudentID"].Style.BackColor = Color.White;
                         Cells["StudentName"].Style.BackColor = Color.White;
-                        Cells["CurrentAttendance"].Value = Student.NullAttendanceMessage();
-                        Cells["TotalAttendance"].Value = Student.NullAttendanceMessage();
+                        StudentsGrid.Rows[e.RowIndex].SetValues(StudentList.Students[ID].MakeTableData(DateTime.Now));
                     }
                     else
                     {
@@ -69,14 +74,13 @@ namespace MeetingAttendance
             //ID
             else if (e.ColumnIndex == 0)
             {
-                int ID;
-                if (value == null || !Int32.TryParse(value.ToString(), out ID))
-                {
-                    WrongIdError();
-                    Cells[col].Value = OldValue;
-                    return;
-                }
-                if(!StudentList.UpdateStudentID(Int32.Parse(OldValue), ID))
+				if (value == null || !Int32.TryParse(value.ToString(), out int ID))
+				{
+					WrongIdError();
+					Cells[col].Value = OldValue;
+					return;
+				}
+				if (!StudentList.UpdateStudentID(Int32.Parse(OldValue), ID))
                 {
                     ExistingIdError();
                     Cells[col].Value = OldValue;

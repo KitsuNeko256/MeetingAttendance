@@ -29,7 +29,12 @@ namespace MeetingAttendance
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
 			this.GroupsGrid = new System.Windows.Forms.DataGridView();
+			this.ID = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.CurrentAttendance = new System.Windows.Forms.DataGridViewTextBoxColumn();
+			this.TotalAttendance = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.StudentListLabel = new System.Windows.Forms.Label();
 			this.CurrentGroupList = new System.Windows.Forms.ListBox();
 			this.AddStudentButton = new System.Windows.Forms.Button();
@@ -42,16 +47,44 @@ namespace MeetingAttendance
 			// 
 			this.GroupsGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
 			this.GroupsGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			this.GroupsGrid.Dock = System.Windows.Forms.DockStyle.Left;
-			this.GroupsGrid.Location = new System.Drawing.Point(0, 0);
+			this.GroupsGrid.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.ID,
+            this.CurrentAttendance,
+            this.TotalAttendance});
+			this.GroupsGrid.Location = new System.Drawing.Point(12, 12);
+			this.GroupsGrid.MultiSelect = false;
 			this.GroupsGrid.Name = "GroupsGrid";
+			this.GroupsGrid.RowHeadersVisible = false;
 			this.GroupsGrid.RowTemplate.Height = 25;
-			this.GroupsGrid.Size = new System.Drawing.Size(287, 289);
+			this.GroupsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+			this.GroupsGrid.Size = new System.Drawing.Size(282, 265);
 			this.GroupsGrid.TabIndex = 4;
 			this.GroupsGrid.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.GroupsGrid_CellBeginEdit);
-			this.GroupsGrid.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.GroupsGrid_CellClick);
 			this.GroupsGrid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.GroupsGrid_CellEndEdit);
+			this.GroupsGrid.RowEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.GroupsGrid_RowEnter);
 			this.GroupsGrid.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.GroupsGrid_UserDeletingRow);
+			// 
+			// ID
+			// 
+			this.ID.FillWeight = 75F;
+			this.ID.HeaderText = "Код группы";
+			this.ID.Name = "ID";
+			// 
+			// CurrentAttendance
+			// 
+			dataGridViewCellStyle1.BackColor = System.Drawing.Color.Silver;
+			this.CurrentAttendance.DefaultCellStyle = dataGridViewCellStyle1;
+			this.CurrentAttendance.HeaderText = "Посещаемость за последние 30 дней";
+			this.CurrentAttendance.Name = "CurrentAttendance";
+			this.CurrentAttendance.ReadOnly = true;
+			// 
+			// TotalAttendance
+			// 
+			dataGridViewCellStyle2.BackColor = System.Drawing.Color.Silver;
+			this.TotalAttendance.DefaultCellStyle = dataGridViewCellStyle2;
+			this.TotalAttendance.HeaderText = "Посещаемость за всё время";
+			this.TotalAttendance.Name = "TotalAttendance";
+			this.TotalAttendance.ReadOnly = true;
 			// 
 			// StudentListLabel
 			// 
@@ -131,5 +164,8 @@ namespace MeetingAttendance
 		private System.Windows.Forms.Button AddStudentButton;
 		private System.Windows.Forms.ComboBox StudentsComboBox;
 		private System.Windows.Forms.Button RemoveStudentButton;
+		private System.Windows.Forms.DataGridViewTextBoxColumn ID;
+		private System.Windows.Forms.DataGridViewTextBoxColumn CurrentAttendance;
+		private System.Windows.Forms.DataGridViewTextBoxColumn TotalAttendance;
 	}
 }

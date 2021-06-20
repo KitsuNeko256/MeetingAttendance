@@ -8,19 +8,19 @@ namespace MeetingAttendance
 	{
 		private int _id;
 		private string _name;
-		public List<int> GroupsID;
-		private List<Tuple<DateTime, bool>> Attendance;
+		private readonly List<string> _groupsID = new List<string>();
+		private readonly List<Tuple<DateTime, bool>> Attendance = new List<Tuple<DateTime, bool>>();
 
 		public int ID
 		{
 			get => _id;
 			set
 			{
-				List<int> list = new List<int>(GroupsID);
-				foreach (int index in list)
+				List<string> list = new List<string>(_groupsID);
+				foreach (string index in list)
 					GroupList.Groups[index].RemoveStudent(ID);
 				_id = value;
-				foreach (int index in list)
+				foreach (string index in list)
 					GroupList.Groups[index].AddStudent(ID);
 			}
 		}
@@ -29,24 +29,24 @@ namespace MeetingAttendance
 			get => _name;
 			set => _name = value;
 		}
+		public List<string> GroupsID
+		{
+			get => _groupsID;
+		}
 		public Student(int id, string name)
 		{
 			_id = id;
-			Name = name;
-			GroupsID = new List<int>();
-			Attendance = new List<Tuple<DateTime, bool>>();
+			_name = name;
 		}
 		public Student(int id, ref StreamReader reader)
 		{
 			_id = id;
 			Name = reader.ReadLine();
-			GroupsID = new List<int>();
 			int groupCount = Int32.Parse(reader.ReadLine());
 			for (int i = 0; i < groupCount; ++i)
 			{
-				GroupsID.Add(Int32.Parse(reader.ReadLine()));
+				_groupsID.Add(reader.ReadLine());
 			}
-			Attendance = new List<Tuple<DateTime, bool>>();
 			int attendanceCount = Int32.Parse(reader.ReadLine());
 			for (int i = 0; i < attendanceCount; ++i)
 			{
@@ -59,8 +59,8 @@ namespace MeetingAttendance
 		{
 			writer.WriteLine(ID);
 			writer.WriteLine(Name);
-			writer.WriteLine(GroupsID.Count);
-			foreach(int entry in GroupsID)
+			writer.WriteLine(_groupsID.Count);
+			foreach(string entry in _groupsID)
 			{
 				writer.WriteLine(entry);
 			}
@@ -74,21 +74,21 @@ namespace MeetingAttendance
 		
 		public void ClearGroups()
 		{
-			List<int> list = new List<int>(GroupsID);
-			foreach (int index in list)
+			List<string> list = new List<string>(_groupsID);
+			foreach (string index in list)
 			{
 				GroupList.Groups[index].RemoveStudent(ID);
 			}
 		}
-		public void AddGroup(int GroupID)
+		public void AddGroup(string GroupID)
 		{
-			if (GroupsID.Contains(GroupID))
+			if (_groupsID.Contains(GroupID))
 				return;
-			GroupsID.Add(GroupID);
+			_groupsID.Add(GroupID);
 		}
-		public void RemoveGroup(int GroupID)
+		public void RemoveGroup(string GroupID)
 		{
-			GroupsID.Remove(GroupID);
+			_groupsID.Remove(GroupID);
 		}
 
 		public void	AddAttendance(DateTime date, bool presence)
@@ -141,11 +141,11 @@ namespace MeetingAttendance
 			string[] row = new string[5];
 			row[0] = ID.ToString();
 			row[1] = Name;
-			if(GroupsID.Count > 0)
+			if(_groupsID.Count > 0)
 			{
-				foreach (int entry in GroupsID)
+				foreach (string entry in _groupsID)
 				{
-					row[2] += GroupList.Groups[entry].Name + ' ';
+					row[2] += GroupList.Groups[entry].ID + ' ';
 				}
 				row[2] = row[2].Trim();
 			}
