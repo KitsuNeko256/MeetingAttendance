@@ -61,12 +61,12 @@ namespace UnitTests
 			GroupList.AddGroup("group");
 			GroupList.Groups["group"].AddStudent(student.ID);
 
-			Assert.AreEqual(0, student.GroupsID[0]);
+			Assert.AreEqual("group", student.GroupsID[0]);
 			Assert.AreEqual(1, GroupList.Groups["group"].StudentsID[0]);
 
 			StudentList.UpdateStudentID(1, 2);
 
-			Assert.AreEqual(0, student.GroupsID[0]);
+			Assert.AreEqual("group", student.GroupsID[0]);
 			Assert.AreEqual(2, GroupList.Groups["group"].StudentsID[0]);
 
 			student.ClearGroups();
@@ -101,6 +101,12 @@ namespace UnitTests
 
 			StudentList.Reset();
 			GroupList.Reset();
+		}
+		[TestMethod]
+		public void DateTest()
+		{
+			double a = 7;
+			Assert.AreEqual(1, a % 2);
 		}
 	}
 }

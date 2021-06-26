@@ -38,9 +38,9 @@ namespace UnitTests
 			DateTime date = new DateTime(2021, 1, 29, 23, 59, 59);
 			string[] actual = GroupList.Groups["group"].MakeTableData(date);
 
-			string[] expected = { "0", "group", (1.0 / 2).ToString("P0"), (2.0 / 3).ToString("P0") };
+			string[] expected = { "group", (1.0 / 2).ToString("P0"), (2.0 / 3).ToString("P0") };
 
-			for (int i = 0; i < 4; ++i)
+			for (int i = 0; i < 3; ++i)
 			{
 				Assert.AreEqual(expected[i], actual[i]);
 			}

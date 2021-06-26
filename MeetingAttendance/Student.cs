@@ -33,6 +33,7 @@ namespace MeetingAttendance
 		{
 			get => _groupsID;
 		}
+
 		public Student(int id, string name)
 		{
 			_id = id;
@@ -106,7 +107,7 @@ namespace MeetingAttendance
 					continue;
 				TimeSpan diff = Now.Subtract(Attendance[i].Item1);
 				if (diff.TotalDays > 30)
-					break;
+					continue;
 				++total;
 				if (Attendance[i].Item2)
 					++attended;
@@ -145,7 +146,7 @@ namespace MeetingAttendance
 			{
 				foreach (string entry in _groupsID)
 				{
-					row[2] += GroupList.Groups[entry].ID + ' ';
+					row[2] += entry + ' ';
 				}
 				row[2] = row[2].Trim();
 			}

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace MeetingAttendance
@@ -126,6 +125,19 @@ namespace MeetingAttendance
             MessageBox.Show("Недопустимое имя студента!", "Недопустимое имя", MessageBoxButtons.OK);
         }
 
+        private void UserHelpButton_Click(object sender, EventArgs e)
+        {
+			string Text = "Советы:\n"
+				+ "Для добавления студента введите номер и имя в свободной строке.\n"
+				+ "Необходимо ввести оба значения, иначе студент не сохранится.\n"
+				+ "Номера должны быть уникальны и состоять только из цифр.\n"
+				+ "Красным цветом обозначены недозаполненые клетки.\n"
+				+ "Для удаления выделите студента и нажмите Delete.\n"
+				+ "Для возвращения в главное меню закройте список студентов.\n"
+				+ "Данные сохраняются автоматически при закрытии списка.";
+			MessageBox.Show(Text, "Справка", MessageBoxButtons.OK);
+        }
+
         public StudentForm()
         {
             InitializeComponent();
@@ -144,5 +156,6 @@ namespace MeetingAttendance
                 }
 			}
         }
-    	}
+
+	}
 }

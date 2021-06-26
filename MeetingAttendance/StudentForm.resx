@@ -72,12 +72,4 @@
   <metadata name="TotalAttendance.UserAddedColumn" type="System.Boolean, System.Private.CoreLib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e">
     <value>True</value>
   </metadata>
-  <data name="TipsLabel.Text" xml:space="preserve">
-    <value>Советы:
-Для добавления нового студента введите его номер и имя в свободной строке снизу.
-Необходимо ввести оба значения, иначе студент не сохранится.
-Красным цветом обозначены недозаполненые клетки.
-Для удаления студента выделите нужного студента и нажмите Delete.
-</value>
-  </data>
 </root>

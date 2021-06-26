@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace MeetingAttendance
@@ -91,7 +90,7 @@ namespace MeetingAttendance
             MessageBox.Show("Недопустимый код группы!", "Недопустимый код", MessageBoxButtons.OK);
         }
 
-        private string CurrentGroupIndex;
+        private string CurrentGroupIndex = "";
 
         private void GroupsGrid_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
@@ -138,7 +137,7 @@ namespace MeetingAttendance
             int ID = StudentList.FindStudent(Name);
             if (ID == -1)
 			{
-                MessageBox.Show("Студент с таким именем не найден!", "ОшиSбка",
+                MessageBox.Show("Студент с таким именем не найден!", "Ошибка",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
 			}
@@ -178,7 +177,21 @@ namespace MeetingAttendance
             InitializeComponent();
             LoadGroupData();
             FillStudentsComboBox();
+            UpdateCurrentGroup(null);
         }
 
+		private void UserHelpButton_Click(object sender, EventArgs e)
+		{
+            string Text = "Советы:\n"
+                + "Для добавления группы введите номер в свободной строке.\n"
+                + "Номера групп должны быть уникальны.\n"
+                + "Для удаления выделите группу и нажмите Delete.\n"
+                + "При выборе группы список её студентов отобразиться справа.\n"
+                + "Для добавления студента в группу введите его имя и нажмите кнопку.\n"
+                + "Для удаления студента из группы выберите его в списке и нажмите кнопку.\n"
+                + "Для возвращения в главное меню закройте список групп.\n"
+                + "Данные сохраняются автоматически при закрытии списка.";
+            MessageBox.Show(Text, "Справка", MessageBoxButtons.OK);
+        }
 	}
 }

@@ -32,14 +32,14 @@ namespace MeetingAttendance
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
 			System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(StudentForm));
 			this.StudentsGrid = new System.Windows.Forms.DataGridView();
 			this.StudentID = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.StudentName = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.Groups = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.CurrentAttendance = new System.Windows.Forms.DataGridViewTextBoxColumn();
 			this.TotalAttendance = new System.Windows.Forms.DataGridViewTextBoxColumn();
-			this.TipsLabel = new System.Windows.Forms.Label();
+			this.StudentLabel = new System.Windows.Forms.Label();
+			this.UserHelpButton = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.StudentsGrid)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -53,13 +53,13 @@ namespace MeetingAttendance
             this.Groups,
             this.CurrentAttendance,
             this.TotalAttendance});
-			this.StudentsGrid.Location = new System.Drawing.Point(12, 12);
+			this.StudentsGrid.Location = new System.Drawing.Point(12, 53);
 			this.StudentsGrid.MultiSelect = false;
 			this.StudentsGrid.Name = "StudentsGrid";
 			this.StudentsGrid.RowHeadersVisible = false;
 			this.StudentsGrid.RowTemplate.Height = 25;
 			this.StudentsGrid.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-			this.StudentsGrid.Size = new System.Drawing.Size(760, 400);
+			this.StudentsGrid.Size = new System.Drawing.Size(760, 396);
 			this.StudentsGrid.TabIndex = 0;
 			this.StudentsGrid.CellBeginEdit += new System.Windows.Forms.DataGridViewCellCancelEventHandler(this.StudentsGrid_CellBeginEdit);
 			this.StudentsGrid.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.StudentsGrid_CellEndEdit);
@@ -103,25 +103,38 @@ namespace MeetingAttendance
 			this.TotalAttendance.Name = "TotalAttendance";
 			this.TotalAttendance.ReadOnly = true;
 			// 
-			// TipsLabel
+			// StudentLabel
 			// 
-			this.TipsLabel.AutoSize = true;
-			this.TipsLabel.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-			this.TipsLabel.Location = new System.Drawing.Point(12, 435);
-			this.TipsLabel.Name = "TipsLabel";
-			this.TipsLabel.Size = new System.Drawing.Size(623, 105);
-			this.TipsLabel.TabIndex = 1;
-			this.TipsLabel.Text = resources.GetString("TipsLabel.Text");
+			this.StudentLabel.Anchor = System.Windows.Forms.AnchorStyles.Top;
+			this.StudentLabel.AutoSize = true;
+			this.StudentLabel.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+			this.StudentLabel.Location = new System.Drawing.Point(317, 9);
+			this.StudentLabel.Name = "StudentLabel";
+			this.StudentLabel.Size = new System.Drawing.Size(169, 25);
+			this.StudentLabel.TabIndex = 2;
+			this.StudentLabel.Text = "Список Студентов";
+			// 
+			// UserHelpButton
+			// 
+			this.UserHelpButton.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+			this.UserHelpButton.Location = new System.Drawing.Point(646, 9);
+			this.UserHelpButton.Name = "UserHelpButton";
+			this.UserHelpButton.Size = new System.Drawing.Size(126, 25);
+			this.UserHelpButton.TabIndex = 3;
+			this.UserHelpButton.Text = "Помощь";
+			this.UserHelpButton.UseVisualStyleBackColor = true;
+			this.UserHelpButton.Click += new System.EventHandler(this.UserHelpButton_Click);
 			// 
 			// StudentForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(784, 549);
-			this.Controls.Add(this.TipsLabel);
+			this.ClientSize = new System.Drawing.Size(784, 461);
+			this.Controls.Add(this.UserHelpButton);
+			this.Controls.Add(this.StudentLabel);
 			this.Controls.Add(this.StudentsGrid);
 			this.Name = "StudentForm";
-			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
 			this.Text = "Студенты";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.StudentForm_FormClosing);
 			((System.ComponentModel.ISupportInitialize)(this.StudentsGrid)).EndInit();
@@ -138,6 +151,7 @@ namespace MeetingAttendance
 		private System.Windows.Forms.DataGridViewTextBoxColumn Groups;
 		private System.Windows.Forms.DataGridViewTextBoxColumn CurrentAttendance;
 		private System.Windows.Forms.DataGridViewTextBoxColumn TotalAttendance;
-		private System.Windows.Forms.Label TipsLabel;
+		private System.Windows.Forms.Label StudentLabel;
+		private System.Windows.Forms.Button UserHelpButton;
 	}
 }

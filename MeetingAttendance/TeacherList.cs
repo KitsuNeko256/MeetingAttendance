@@ -8,10 +8,9 @@ namespace MeetingAttendance
 	public class TeacherList
 	{
 		private static int nextID = 0;
-		public static Dictionary<int, Teacher> Teachers;
+		public static readonly Dictionary<int, Teacher> Teachers = new Dictionary<int, Teacher>();
 		public static void LoadFromFile()
 		{
-			Teachers = new Dictionary<int, Teacher>();
 			if (Directory.Exists("data"))
 			{
 				if (File.Exists("data\\teachers.txt"))
@@ -45,6 +44,18 @@ namespace MeetingAttendance
 
 			writer.Close();
 		}
+
+		public static int FindTeacher(string name)
+		{
+			foreach (Teacher entry in Teachers.Values)
+			{
+				if (entry.Name == name)
+				{
+					return entry.ID;
+				}
+			}
+			return -1;
+		}
 		public static int AddTeacher(string name)
 		{
 			int id = nextID;
@@ -66,7 +77,7 @@ namespace MeetingAttendance
 		public static void Reset()
 		{
 			nextID = 0;
-			Teachers = null;
+			Teachers.Clear();
 		}
 	}
 }

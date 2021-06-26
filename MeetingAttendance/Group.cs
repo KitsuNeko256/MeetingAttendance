@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 
 namespace MeetingAttendance
@@ -9,6 +8,7 @@ namespace MeetingAttendance
 	{
 		private string _id;
 		private readonly List<int> _studentsID = new List<int>();
+		private readonly List<int> _lessonsID = new List<int>();
 		
 		public string ID
 		{
@@ -20,12 +20,25 @@ namespace MeetingAttendance
 					StudentList.Students[entry].RemoveGroup(ID);
 					StudentList.Students[entry].AddGroup(value);
 				}
+				List<int> list = new List<int>(LessonsID);
+				foreach (int entry in list)
+				{
+					LessonList.Lessons[entry].RemoveGroup(ID);
+				}
 				_id = value;
+				foreach (int entry in list)
+				{
+					LessonList.Lessons[entry].AddGroup(value);
+				}
 			}
 		}
 		public List<int> StudentsID
 		{
 			get => _studentsID;
+		}
+		public List<int> LessonsID
+		{
+			get => _lessonsID;
 		}
 		
 		public Group(string id)
@@ -40,12 +53,22 @@ namespace MeetingAttendance
 			{
 				StudentsID.Add(Int32.Parse(reader.ReadLine()));
 			}
+			int lessonsCount = Int32.Parse(reader.ReadLine());
+			for (int i = 0; i < lessonsCount; ++i)
+			{
+				LessonsID.Add(Int32.Parse(reader.ReadLine()));
+			}
 		}
 		public void SaveToFile(ref StreamWriter writer)
 		{
 			writer.WriteLine(ID);
 			writer.WriteLine(StudentsID.Count);
 			foreach (int entry in StudentsID)
+			{
+				writer.WriteLine(entry);
+			}
+			writer.WriteLine(LessonsID.Count);
+			foreach (int entry in LessonsID)
 			{
 				writer.WriteLine(entry);
 			}
@@ -81,6 +104,17 @@ namespace MeetingAttendance
 					StudentsID.Remove(StudentID);
 				}
 			}
+		}
+
+		public void AddLesson(int LessonID)
+		{
+			if (LessonsID.Contains(LessonID))
+				return;
+			LessonsID.Add(LessonID);
+		}
+		public void RemoveLesson(int LessonID)
+		{
+			LessonsID.Remove(LessonID);
 		}
 
 		public double CurrentAttendance(DateTime Now)
@@ -132,12 +166,14 @@ namespace MeetingAttendance
 		{
 			string[] row = new string[3];
 			row[0] = ID.ToString();
+
 			double attendance = CurrentAttendance(Now);
 			if (attendance == -2)
 				row[1] = NoStudentsMessage();
 			else if (attendance == -1)
 				row[1] = Student.NullAttendanceMessage();
 			else row[1] = attendance.ToString("P0");
+
 			attendance = TotalAttendance();
 			if (attendance == -2)
 				row[2] = NoStudentsMessage();
