@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 
 namespace MeetingAttendance
@@ -9,37 +8,46 @@ namespace MeetingAttendance
 	{
 		private int _id;
 		private string _name;
-		public List<int> GroupsID;
-		private List<Tuple<DateTime, bool>> Attendance;
+		private readonly List<string> _groupsID = new List<string>();
+		private readonly List<Tuple<DateTime, bool>> Attendance = new List<Tuple<DateTime, bool>>();
 
 		public int ID
 		{
 			get => _id;
-			set => _id = value;
+			set
+			{
+				List<string> list = new List<string>(_groupsID);
+				foreach (string index in list)
+					GroupList.Groups[index].RemoveStudent(ID);
+				_id = value;
+				foreach (string index in list)
+					GroupList.Groups[index].AddStudent(ID);
+			}
 		}
 		public string Name
 		{
 			get => _name;
 			set => _name = value;
 		}
+		public List<string> GroupsID
+		{
+			get => _groupsID;
+		}
+
 		public Student(int id, string name)
 		{
-			ID = id;
-			Name = name;
-			GroupsID = new List<int>();
-			Attendance = new List<Tuple<DateTime, bool>>();
+			_id = id;
+			_name = name;
 		}
 		public Student(int id, ref StreamReader reader)
 		{
-			ID = id;
+			_id = id;
 			Name = reader.ReadLine();
-			GroupsID = new List<int>();
 			int groupCount = Int32.Parse(reader.ReadLine());
 			for (int i = 0; i < groupCount; ++i)
 			{
-				GroupsID.Add(Int32.Parse(reader.ReadLine()));
+				_groupsID.Add(reader.ReadLine());
 			}
-			Attendance = new List<Tuple<DateTime, bool>>();
 			int attendanceCount = Int32.Parse(reader.ReadLine());
 			for (int i = 0; i < attendanceCount; ++i)
 			{
@@ -52,8 +60,8 @@ namespace MeetingAttendance
 		{
 			writer.WriteLine(ID);
 			writer.WriteLine(Name);
-			writer.WriteLine(GroupsID.Count);
-			foreach(int entry in GroupsID)
+			writer.WriteLine(_groupsID.Count);
+			foreach(string entry in _groupsID)
 			{
 				writer.WriteLine(entry);
 			}
@@ -64,37 +72,24 @@ namespace MeetingAttendance
 				writer.WriteLine(entry.Item2);
 			}
 		}
-		public void Delete()
+		
+		public void ClearGroups()
 		{
-			List<int> list = new List<int>(GroupsID);
-			foreach (int index in list)
+			List<string> list = new List<string>(_groupsID);
+			foreach (string index in list)
 			{
 				GroupList.Groups[index].RemoveStudent(ID);
 			}
 		}
-		public void ChangeID(int newID)
+		public void AddGroup(string GroupID)
 		{
-			List<int> list = new List<int>(GroupsID);
-			foreach (int index in list)
-			{
-				GroupList.Groups[index].RemoveStudent(ID);
-			}
-			ID = newID;
-			foreach (int index in list)
-			{
-				GroupList.Groups[index].AddStudent(ID);
-			}
-		}
-
-		public void AddGroup(int GroupID)
-		{
-			if (GroupsID.Contains(GroupID))
+			if (_groupsID.Contains(GroupID))
 				return;
-			GroupsID.Add(GroupID);
+			_groupsID.Add(GroupID);
 		}
-		public void RemoveGroup(int GroupID)
+		public void RemoveGroup(string GroupID)
 		{
-			GroupsID.Remove(GroupID);
+			_groupsID.Remove(GroupID);
 		}
 
 		public void	AddAttendance(DateTime date, bool presence)
@@ -112,7 +107,7 @@ namespace MeetingAttendance
 					continue;
 				TimeSpan diff = Now.Subtract(Attendance[i].Item1);
 				if (diff.TotalDays > 30)
-					break;
+					continue;
 				++total;
 				if (Attendance[i].Item2)
 					++attended;
@@ -138,27 +133,32 @@ namespace MeetingAttendance
 			return attended/total;
 		}
 
+		public static string NullAttendanceMessage()
+		{
+			return "нет записей";
+		}
 		public string[] MakeTableData(DateTime Now)
 		{
 			string[] row = new string[5];
 			row[0] = ID.ToString();
 			row[1] = Name;
-			if(GroupsID.Count > 0)
+			if(_groupsID.Count > 0)
 			{
-				foreach (int entry in GroupsID)
+				foreach (string entry in _groupsID)
 				{
-					row[2] += GroupList.Groups[entry].Name + " ";
+					row[2] += entry + ' ';
 				}
 				row[2] = row[2].Trim();
 			}
 			double attendance = CurrentAttendance(Now);
 			if (attendance == -1)
-				row[3] = "нет занятий";
+				row[3] = NullAttendanceMessage();
 			else row[3] = attendance.ToString("P0");
+
 			attendance = TotalAttendance();
 			if (attendance == -1)
-				row[4] = "нет занятий";
-			else row[4] = TotalAttendance().ToString("P0");
+				row[4] = NullAttendanceMessage();
+			else row[4] = attendance.ToString("P0");
 
 			return row;
 		}

@@ -1,17 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 
 namespace MeetingAttendance
 {
 	public class StudentList
 	{
-		public static Dictionary<int, Student> Students;
+		private static readonly Dictionary<int, Student> _students = new Dictionary<int, Student>();
+
+		public static Dictionary<int, Student> Students
+		{
+			get => _students;
+		}
 
 		public static void LoadFromFile()
 		{
-			Students = new Dictionary<int, Student>();
 			if (Directory.Exists("data"))
 			{
 				if (File.Exists("data\\students.txt"))
@@ -66,14 +69,13 @@ namespace MeetingAttendance
 		}
 		public static bool UpdateStudentID(int oldID, int newID)
 		{
+			if(oldID == newID)
+				return true;
 			if (!Students.ContainsKey(oldID) || Students.ContainsKey(newID)) 
 				return false;
-			if (oldID != newID)
-			{
-				Students[newID] = Students[oldID];
-				Students[newID].ChangeID(newID);
-				Students.Remove(oldID);
-			}
+			Students[newID] = Students[oldID];
+			Students[newID].ID = newID;
+			Students.Remove(oldID);
 			return true;
 		}
 		public static void UpdateStudentName(int id, string name)
@@ -82,13 +84,13 @@ namespace MeetingAttendance
 		}
 		public static void DeleteStudent(int index)
 		{
-			Students[index].Delete();
+			Students[index].ClearGroups();
 			Students.Remove(index);
 		}
 
 		public static void Reset()
 		{
-			Students = null;
+			_students.Clear();
 		}
 	}
 }

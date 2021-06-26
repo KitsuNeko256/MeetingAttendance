@@ -17,6 +17,7 @@ namespace MeetingAttendance
 			StudentList.LoadFromFile();
 			GroupList.LoadFromFile();
 			TeacherList.LoadFromFile();
+			LessonList.LoadFromFile();
 
 			Application.SetHighDpiMode(HighDpiMode.SystemAware);
 			Application.EnableVisualStyles();
@@ -26,6 +27,7 @@ namespace MeetingAttendance
 			StudentList.SaveToFile();
 			GroupList.SaveToFile();
 			TeacherList.SaveToFile();
+			LessonList.SaveToFile();
 		}
 	}
 }

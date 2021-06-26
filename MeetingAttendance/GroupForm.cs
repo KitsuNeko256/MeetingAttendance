@@ -3,46 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace MeetingAttendance
 {
 	public partial class GroupForm : Form
 	{
-
-        private void SetupDataGridView()
-        {
-            GroupsGrid.ColumnCount = 4;
-
-            GroupsGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.Navy;
-            GroupsGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            GroupsGrid.ColumnHeadersDefaultCellStyle.Font =
-                new Font(GroupsGrid.Font, FontStyle.Bold);
-
-            GroupsGrid.AutoSizeRowsMode =
-                DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
-            GroupsGrid.ColumnHeadersBorderStyle =
-                DataGridViewHeaderBorderStyle.Single;
-            GroupsGrid.CellBorderStyle = DataGridViewCellBorderStyle.Single;
-            GroupsGrid.GridColor = Color.Black;
-            GroupsGrid.RowHeadersVisible = false;
-
-            GroupsGrid.Columns[0].Name = "ID";
-            GroupsGrid.Columns[0].Visible = false;
-            GroupsGrid.Columns[1].Name = "Name";
-            GroupsGrid.Columns[1].HeaderText = "Код группы";
-            GroupsGrid.Columns[2].Name = "Current Attendance";
-            GroupsGrid.Columns[2].HeaderText = "Текущая посещаемость";
-            GroupsGrid.Columns[2].ReadOnly = true;
-            GroupsGrid.Columns[3].Name = "Total Attendance";
-            GroupsGrid.Columns[3].HeaderText = "Общая посещаемость";
-            GroupsGrid.Columns[3].ReadOnly = true;
-
-            GroupsGrid.SelectionMode =
-                DataGridViewSelectionMode.FullRowSelect;
-            GroupsGrid.MultiSelect = false;
-        }
         private void LoadGroupData()
         {
             foreach (Group entry in GroupList.Groups.Values)
@@ -56,60 +22,48 @@ namespace MeetingAttendance
         {
             int row = e.RowIndex;
             int col = e.ColumnIndex;
-            if (GroupsGrid.Rows[row].Cells[col].Value == null)
-                OldValue = "";
-            else OldValue = GroupsGrid.Rows[row].Cells[col].Value.ToString();
+            OldValue = (GroupsGrid.Rows[row].Cells[col].Value == null)
+                ? ""
+                : GroupsGrid.Rows[row].Cells[col].Value.ToString();
         }
         private void GroupsGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            int row = e.RowIndex;
+            DataGridViewCellCollection Cells = GroupsGrid.Rows[e.RowIndex].Cells;
             int col = e.ColumnIndex;
-            object value = GroupsGrid.Rows[row].Cells[col].Value;
+            object value = Cells[col].Value;
             //New Group
-            if (GroupsGrid.Rows[row].Cells[2].Value == null)
+            if (Cells["CurrentAttendance"].Value == null)
             {
-                /*
-                if (GroupsGrid.Rows[row].Cells[0].Value == null ||
-                    GroupsGrid.Rows[row].Cells[1].Value == null)
+                if (Cells["ID"].Value == null)
                     return;
-                int ID;
-                if (!Int32.TryParse(GroupsGrid.Rows[row].Cells[0].Value.ToString(), out ID))
+                string ID = Cells["ID"].Value.ToString();
+				if (GroupList.AddGroup(ID))
                 {
-                    WrongIdError();
-                    return;
+                    GroupsGrid.Rows[e.RowIndex].SetValues(GroupList.Groups[ID].MakeTableData(DateTime.Now));
                 }
-                */
-                if (GroupsGrid.Rows[row].Cells[1].Value == null)
-                    return;
-                string Name = GroupsGrid.Rows[row].Cells[1].Value.ToString();
-                GroupList.AddGroup(Name);
-                GroupsGrid.Rows[row].Cells[2].Value = "нет занятий";
-                GroupsGrid.Rows[row].Cells[3].Value = "нет занятий";
+                else
+                {
+                    ExistingIdError();
+                    Cells[col].Value = OldValue;
+                }
             }
-            /*
             //ID
-            else if (e.ColumnIndex == 0)
-            {
-                if (value == null)
-                {
-                    WrongIdError();
-                    GroupsGrid.Rows[row].Cells[col].Value = OldValue;
-                    return;
-                }
-                StudentList.UpdateStudentID(Int32.Parse(OldValue.ToString()), Int32.Parse(value.ToString()));
-            }
-            */
-            //NAME
             else
             {
-                if (value == null)
+                if (value == null || String.IsNullOrWhiteSpace(value.ToString()))
                 {
-                    WrongNameError();
-                    GroupsGrid.Rows[row].Cells[col].Value = OldValue;
-                    return;
+                    WrongIdError();
+                    Cells[col].Value = OldValue;
                 }
-                int ID = Int32.Parse(GroupsGrid.Rows[row].Cells[0].Value.ToString());
-                GroupList.UpdateGroup(ID, value.ToString());
+                else if (!GroupList.UpdateGroup(OldValue, value.ToString()))
+                {
+                    ExistingIdError();
+                    Cells[col].Value = OldValue;
+                }
+                else
+				{
+                    UpdateCurrentGroup(value.ToString());
+				}
             }
         }
         private void GroupsGrid_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
@@ -120,44 +74,50 @@ namespace MeetingAttendance
             {
                 if (e.Row.Cells["ID"].Value != null)
                 {
-                    int index = Int32.Parse(e.Row.Cells["ID"].Value.ToString());
-                    GroupList.DeleteGroup(index);
+                    string id = e.Row.Cells["ID"].Value.ToString();
+                    GroupList.DeleteGroup(id);
                 }
-                CurrentGroupIndex--;
-                UpdateCurrentGroup();
+                UpdateCurrentGroup(null);
             }
         }
 
+        private void ExistingIdError()
+        {
+            MessageBox.Show("Этот код группы уже занят!", "Недопустимый код", MessageBoxButtons.OK);
+        }
         private void WrongIdError()
         {
-            MessageBox.Show("Неверный номер группы!", "Неверный номер", MessageBoxButtons.OK);
-        }
-        private void WrongNameError()
-        {
-            MessageBox.Show("Недопустимый код групы!", "Недопустимый код", MessageBoxButtons.OK);
+            MessageBox.Show("Недопустимый код группы!", "Недопустимый код", MessageBoxButtons.OK);
         }
 
-        private int CurrentGroupIndex = 0;
-        private void GroupsGrid_CellClick(object sender, DataGridViewCellEventArgs e)
+        private string CurrentGroupIndex = "";
+
+        private void GroupsGrid_RowEnter(object sender, DataGridViewCellEventArgs e)
         {
-			if (GroupsGrid.CurrentRow.Cells["ID"].Value == null)
-			{
-                return;
-			}
-            CurrentGroupIndex = Int32.Parse(GroupsGrid.CurrentRow.Cells["ID"].Value.ToString());
-            UpdateCurrentGroup();
+            DataGridViewRow Row = GroupsGrid.Rows[e.RowIndex];
+            UpdateCurrentGroup((Row == null || Row.Cells["ID"].Value == null)
+                ? null
+                : Row.Cells["ID"].Value.ToString());
         }
-        private void UpdateCurrentGroup()
+        private void UpdateCurrentGroup(string NewGroupIndex)
         {
+			if (CurrentGroupIndex == NewGroupIndex)
+				return;
+            CurrentGroupIndex = NewGroupIndex;
             CurrentGroupList.Items.Clear();
-            if (CurrentGroupIndex < 0)
+            if (CurrentGroupIndex == null)
+            {
+                AddStudentButton.Enabled = false;
+                RemoveStudentButton.Enabled = false;
                 return;
+            }
+            AddStudentButton.Enabled = true;
+            RemoveStudentButton.Enabled = true;
             foreach (int entry in GroupList.Groups[CurrentGroupIndex].StudentsID)
             {
                 CurrentGroupList.Items.Add(StudentList.Students[entry].Name);
             }
         }
-
 
         private void FillStudentsComboBox()
         {
@@ -187,30 +147,51 @@ namespace MeetingAttendance
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
 			}
-            GroupList.Groups[CurrentGroupIndex].AddStudent(ID); 
-            CurrentGroupList.Items.Add(StudentList.Students[ID].Name);
+            GroupList.Groups[CurrentGroupIndex].AddStudent(ID);
+			CurrentGroupList.Items.Add(StudentList.Students[ID].Name);
+            GroupsGrid.Rows[GroupsGrid.CurrentCell.RowIndex].SetValues(GroupList.Groups[CurrentGroupIndex].MakeTableData(DateTime.Now));
         }
         private void RemoveStudentButton_Click(object sender, EventArgs e)
         {
+            if(CurrentGroupList.SelectedItem == null)
+			{
+                MessageBox.Show("Выберите студента из списка!", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             string Name = CurrentGroupList.SelectedItem.ToString();
             int ID = StudentList.FindStudent(Name);
             if (ID == -1)
             {
-                //student doesn't exist error
+                MessageBox.Show("Студент с таким именем не найден!", "Ошибка",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             GroupList.Groups[CurrentGroupIndex].RemoveStudent(ID);
             CurrentGroupList.Items.Remove(Name);
+            GroupsGrid.Rows[GroupsGrid.CurrentCell.RowIndex].SetValues(GroupList.Groups[CurrentGroupIndex].MakeTableData(DateTime.Now));
         }
 
         public GroupForm()
         {
             InitializeComponent();
-            SetupDataGridView();
             LoadGroupData();
-            UpdateCurrentGroup();
             FillStudentsComboBox();
+            UpdateCurrentGroup(null);
         }
 
+		private void UserHelpButton_Click(object sender, EventArgs e)
+		{
+            string Text = "Советы:\n"
+                + "Для добавления группы введите номер в свободной строке.\n"
+                + "Номера групп должны быть уникальны.\n"
+                + "Для удаления выделите группу и нажмите Delete.\n"
+                + "При выборе группы список её студентов отобразиться справа.\n"
+                + "Для добавления студента в группу введите его имя и нажмите кнопку.\n"
+                + "Для удаления студента из группы выберите его в списке и нажмите кнопку.\n"
+                + "Для возвращения в главное меню закройте список групп.\n"
+                + "Данные сохраняются автоматически при закрытии списка.";
+            MessageBox.Show(Text, "Справка", MessageBoxButtons.OK);
+        }
 	}
 }

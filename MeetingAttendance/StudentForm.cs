@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace MeetingAttendance
@@ -11,41 +10,6 @@ namespace MeetingAttendance
 
 	public partial class StudentForm : Form
 	{
-        private void SetupDataGridView()
-        {
-            StudentsGrid.ColumnCount = 5;
-
-            StudentsGrid.ColumnHeadersDefaultCellStyle.BackColor = Color.Navy;
-            StudentsGrid.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            StudentsGrid.ColumnHeadersDefaultCellStyle.Font =
-                new Font(StudentsGrid.Font, FontStyle.Bold);
-
-            StudentsGrid.AutoSizeRowsMode =
-                DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders;
-            StudentsGrid.ColumnHeadersBorderStyle =
-                DataGridViewHeaderBorderStyle.Single;
-            StudentsGrid.CellBorderStyle = DataGridViewCellBorderStyle.Single;
-            StudentsGrid.GridColor = Color.Black;
-            StudentsGrid.RowHeadersVisible = false;
-
-            StudentsGrid.Columns[0].Name = "ID";
-            StudentsGrid.Columns[0].HeaderText = "Студенческий Номер";
-            StudentsGrid.Columns[1].Name = "Name";
-            StudentsGrid.Columns[1].HeaderText = "Имя";
-            StudentsGrid.Columns[2].Name = "Group";
-            StudentsGrid.Columns[2].HeaderText = "Группа";
-            StudentsGrid.Columns[2].ReadOnly = true;
-            StudentsGrid.Columns[3].Name = "Current Attendance";
-            StudentsGrid.Columns[3].HeaderText = "Текущая посещаемость";
-            StudentsGrid.Columns[3].ReadOnly = true;
-            StudentsGrid.Columns[4].Name = "Total Attendance";
-            StudentsGrid.Columns[4].HeaderText = "Общая посещаемость";
-            StudentsGrid.Columns[4].ReadOnly = true;
-
-            StudentsGrid.SelectionMode =
-                DataGridViewSelectionMode.FullRowSelect;
-            StudentsGrid.MultiSelect = false;
-        }
         private void LoadStudentData()
         {
             foreach(Student entry in StudentList.Students.Values)
@@ -59,61 +23,78 @@ namespace MeetingAttendance
 		{
             int row = e.RowIndex;
             int col = e.ColumnIndex;
-            if (StudentsGrid.Rows[row].Cells[col].Value == null)
-                OldValue = "";
-            else OldValue = StudentsGrid.Rows[row].Cells[col].Value.ToString();
+            OldValue = (StudentsGrid.Rows[row].Cells[col].Value == null) 
+                ? "" 
+                : StudentsGrid.Rows[row].Cells[col].Value.ToString();
 		}
         private void StudentsGrid_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
-            int row = e.RowIndex;
+            DataGridViewCellCollection Cells = StudentsGrid.Rows[e.RowIndex].Cells;
             int col = e.ColumnIndex;
-            object value = StudentsGrid.Rows[row].Cells[col].Value;
+            object value = Cells[col].Value;
             //New Student
-            if (StudentsGrid.Rows[row].Cells[3].Value == null)
+            if (Cells["CurrentAttendance"].Value == null)
 			{
-                if (StudentsGrid.Rows[row].Cells[0].Value == null ||
-                    StudentsGrid.Rows[row].Cells[1].Value == null)
-                        return;
-                int ID;
-                if(!Int32.TryParse(StudentsGrid.Rows[row].Cells[0].Value.ToString(), out ID))
-                {
-                    WrongIdError();
-                    StudentsGrid.Rows[row].Cells[col].Value = OldValue;
-                    return;
-                }
-                string Name = StudentsGrid.Rows[row].Cells[1].Value.ToString();
-                if (StudentList.AddStudent(ID, Name))
-                {
-                    StudentsGrid.Rows[row].Cells[3].Value = "нет занятий";
-                    StudentsGrid.Rows[row].Cells[4].Value = "нет занятий";
-                }
-				else
+                if (Cells["StudentID"].Value == null)
 				{
-                    ExistingIdError();
-                    StudentsGrid.Rows[row].Cells[col].Value = OldValue;
+                    if (Cells["StudentName"].Value == null)
+                    {
+                        StudentsGrid.Rows.RemoveAt(e.RowIndex);
+                        return;
+                    }
+                    Cells["StudentID"].Style.BackColor = Color.FromArgb(255, 255, 225, 225);
+                }
+                else if (Cells["StudentName"].Value == null)
+                {
+                    Cells["StudentName"].Style.BackColor = Color.FromArgb(255, 255, 225, 225);
+                }
+                else
+				{
+                    if (!Int32.TryParse(Cells["StudentID"].Value.ToString(), out int ID))
+                    {
+                        WrongIdError();
+                        Cells[col].Value = OldValue;
+                        return;
+                    }
+                    string Name = Cells["StudentName"].Value.ToString();
+                    if (StudentList.AddStudent(ID, Name))
+                    {
+                        Cells["StudentID"].Style.BackColor = Color.White;
+                        Cells["StudentName"].Style.BackColor = Color.White;
+                        StudentsGrid.Rows[e.RowIndex].SetValues(StudentList.Students[ID].MakeTableData(DateTime.Now));
+                    }
+                    else
+                    {
+                        ExistingIdError();
+                        Cells[col].Value = OldValue;
+                    }
                 }
             }
             //ID
-            else if (e.ColumnIndex == 0) 
-			{
-                if (value == null)
-                {
+            else if (e.ColumnIndex == 0)
+            {
+				if (value == null || !Int32.TryParse(value.ToString(), out int ID))
+				{
 					WrongIdError();
-                    StudentsGrid.Rows[row].Cells[col].Value = OldValue;
-                    return;
+					Cells[col].Value = OldValue;
+					return;
+				}
+				if (!StudentList.UpdateStudentID(Int32.Parse(OldValue), ID))
+                {
+                    ExistingIdError();
+                    Cells[col].Value = OldValue;
                 }
-                StudentList.UpdateStudentID(Int32.Parse(OldValue.ToString()), Int32.Parse(value.ToString()));
-			}
+            }
             //NAME
             else
             {
-                if(value == null)
-				{
+                if(value == null || String.IsNullOrWhiteSpace(value.ToString()))
+                {
                     WrongNameError();
-                    StudentsGrid.Rows[row].Cells[col].Value = OldValue;
+                    Cells[col].Value = OldValue;
                     return;
                 }
-                int ID = Int32.Parse(StudentsGrid.Rows[row].Cells[0].Value.ToString());
+                int ID = Int32.Parse(Cells["StudentID"].Value.ToString());
                 StudentList.UpdateStudentName(ID, value.ToString());
 			}
         }
@@ -123,9 +104,9 @@ namespace MeetingAttendance
             e.Cancel = cancel;
             if (!cancel)
 			{
-                if (e.Row.Cells["ID"].Value != null)
+                if (e.Row.Cells["StudentID"].Value != null)
                 {
-                    int index = Int32.Parse(e.Row.Cells["ID"].Value.ToString());
+                    int index = Int32.Parse(e.Row.Cells["StudentID"].Value.ToString());
                     StudentList.DeleteStudent(index);
                 }
 			}
@@ -133,22 +114,48 @@ namespace MeetingAttendance
 
         private void ExistingIdError()
         {
-            MessageBox.Show("Этот номер уже занят!", "Неверный номер", MessageBoxButtons.OK);
+            MessageBox.Show("Этот номер уже занят!", "Недопустимый номер", MessageBoxButtons.OK);
         }
         private void WrongIdError()
 		{
-            MessageBox.Show("Неверный номер студента!", "Неверный номер", MessageBoxButtons.OK);
+            MessageBox.Show("Недопустимый номер студента!", "Недопустимый номер", MessageBoxButtons.OK);
         }
         private void WrongNameError()
         {
             MessageBox.Show("Недопустимое имя студента!", "Недопустимое имя", MessageBoxButtons.OK);
         }
 
+        private void UserHelpButton_Click(object sender, EventArgs e)
+        {
+			string Text = "Советы:\n"
+				+ "Для добавления студента введите номер и имя в свободной строке.\n"
+				+ "Необходимо ввести оба значения, иначе студент не сохранится.\n"
+				+ "Номера должны быть уникальны и состоять только из цифр.\n"
+				+ "Красным цветом обозначены недозаполненые клетки.\n"
+				+ "Для удаления выделите студента и нажмите Delete.\n"
+				+ "Для возвращения в главное меню закройте список студентов.\n"
+				+ "Данные сохраняются автоматически при закрытии списка.";
+			MessageBox.Show(Text, "Справка", MessageBoxButtons.OK);
+        }
+
         public StudentForm()
         {
             InitializeComponent();
-            SetupDataGridView();
             LoadStudentData();
         }
+
+		private void StudentForm_FormClosing(object sender, FormClosingEventArgs e)
+		{
+            foreach(DataGridViewRow entry in StudentsGrid.Rows)
+			{
+                if((entry.Cells["StudentID"].Value == null) ^ (entry.Cells["StudentName"].Value == null))
+				{
+                    bool cancel = MessageBox.Show("Информация о некоторых студентах недозаполнена. Если вы выйдете, она не сохранится. Выйти?", "Несохраненные записи", MessageBoxButtons.OKCancel) == DialogResult.Cancel;
+                    e.Cancel = cancel;
+                    return;
+                }
+			}
+        }
+
 	}
 }

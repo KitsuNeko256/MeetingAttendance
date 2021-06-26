@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 
 namespace MeetingAttendance
 {
 	public class GroupList
 	{
-		private static int nextID = 0;
-		public static Dictionary<int, Group> Groups;
+		private static readonly Dictionary<string, Group> _groups = new Dictionary<string, Group>();
+
+		public static Dictionary<string, Group> Groups
+		{
+			get => _groups;
+		}
 
 		public static void LoadFromFile()
 		{
-			Groups = new Dictionary<int, Group>();
 			if (Directory.Exists("data"))
 			{
 				if (File.Exists("data\\groups.txt"))
@@ -21,14 +23,12 @@ namespace MeetingAttendance
 					int count = Int32.Parse(reader.ReadLine());
 					for (int i = 0; i < count; ++i)
 					{
-						int id = Int32.Parse(reader.ReadLine());
+						string id = reader.ReadLine();
 						Groups[id] = new Group(id, ref reader);
-						nextID = Math.Max(nextID, id);
 					}
 					reader.Close();
 				}
 			}
-			++nextID;
 		}
 		public static void SaveToFile()
 		{
@@ -47,29 +47,35 @@ namespace MeetingAttendance
 			writer.Close();
 		}
 
-		public static int AddGroup(string name)
+		public static bool AddGroup(string id)
 		{
-			int id = nextID;
-			++nextID;
-
-			Groups[id] = new Group(id, name);
-
-			return id;
+			if (Groups.ContainsKey(id))
+			{
+				return false;
+			}
+			Groups[id] = new Group(id);
+			return true;
 		}
-		public static void UpdateGroup(int index, string name)
+		public static bool UpdateGroup(string oldID, string newID)
 		{
-			Groups[index].Name = name;
+			if (oldID == newID)
+				return true;
+			if (!Groups.ContainsKey(oldID) || Groups.ContainsKey(newID))
+				return false;
+			Groups[newID] = Groups[oldID];
+			Groups[newID].ID = newID;
+			Groups.Remove(oldID);
+			return true;
 		}
-		public static void DeleteGroup(int index)
+		public static void DeleteGroup(string id)
 		{
-			Groups[index].Delete();
-			Groups.Remove(index);
+			Groups[id].ClearStudents();
+			Groups.Remove(id);
 		}
 
 		public static void Reset()
 		{
-			nextID = 0;
-			Groups = null;
+			_groups.Clear();
 		}
 	}
 }

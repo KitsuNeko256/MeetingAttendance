@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.IO;
 
 namespace MeetingAttendance
@@ -9,7 +8,7 @@ namespace MeetingAttendance
 	{
 		private int _id;
 		private string _name;
-		private List<Tuple<DateTime, double>> Attendance;
+		private readonly List<Tuple<DateTime, double>> Attendance = new List<Tuple<DateTime, double>>();
 
 		public int ID
 		{
@@ -24,15 +23,13 @@ namespace MeetingAttendance
 
 		public Teacher(int id, string name)
 		{
-			ID = id;
+			_id = id;
 			Name = name;
-			Attendance = new List<Tuple<DateTime, double>>();
 		}
 		public Teacher(int id, ref StreamReader reader)
 		{
 			ID = id;
 			Name = reader.ReadLine();
-			Attendance = new List<Tuple<DateTime, double>>();
 			int attendanceCount = Int32.Parse(reader.ReadLine());
 			for (int i = 0; i < attendanceCount; ++i)
 			{
@@ -57,9 +54,8 @@ namespace MeetingAttendance
 		{
 			Attendance.Add(Tuple.Create(date, presence));
 		}
-		public double CurrentAttendance()
+		public double CurrentAttendance(DateTime Now)
 		{
-			DateTime Now = DateTime.Now;
 			double attended = 0;
 			double total = 0;
 
@@ -91,28 +87,21 @@ namespace MeetingAttendance
 			return attended / total;
 		}
 
-		public string[] MakeTableData()
+		public string[] MakeTableData(DateTime Now)
 		{
-			string[] row = new string[6];
+			string[] row = new string[4];
 			row[0] = ID.ToString();
 			row[1] = Name;
-			double attendance = CurrentAttendance();
+
+			double attendance = CurrentAttendance(Now);
 			if (attendance == -1)
-				row[2] = "нет занятий";
+				row[2] = Student.NullAttendanceMessage();
 			else row[2] = attendance.ToString("P0");
+
 			attendance = TotalAttendance();
 			if (attendance == -1)
-				row[3] = "нет занятий";
-			else row[3] = TotalAttendance().ToString("P0");
-			/*
-			foreach (int entry in GroupsID)
-			{
-				row[3] += GroupList.Groups[entry].Name + "\n";
-			}
-			row[3].Trim();
-			row[4] = "0%";
-			row[5] = "0%";
-			*/
+				row[3] = Student.NullAttendanceMessage();
+			else row[3] = attendance.ToString("P0");
 
 			return row;
 		}
